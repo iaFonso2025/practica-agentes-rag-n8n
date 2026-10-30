@@ -1,0 +1,221 @@
+{
+  "name": "Agente soporte",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "allowFileUploads": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        16,
+        0
+      ],
+      "id": "d64eb7a5-0e8d-42b4-8272-914b368b2113",
+      "name": "When chat message received",
+      "webhookId": "d3f959e1-9f62-47b1-be2c-b785515775c2"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Tienes dos herramientas: buscar_documentacion para preguntas sobre normas de la empresa, y consultar_solicitud para el estado de una solicitud INC-xxxx. Para usar consultar_solicitud necesitas el ID y el email del empleado: si falta alguno, pídeselo. Nunca digas que no tienes acceso a las solicitudes: usa la herramienta."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        400,
+        0
+      ],
+      "id": "683c5d28-4ec4-47ed-bfcb-6f9d250c6eaa",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "qwen3:8b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        272,
+        208
+      ],
+      "id": "675e9dd0-432c-40f5-8a0f-2d3f199b63dc",
+      "name": "Ollama Chat Model"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        416,
+        208
+      ],
+      "id": "72c849ee-2825-4449-bf4a-3460c794867b",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Busca en la documentación interna vigente (vacaciones, teletrabajo, soporte, etc.). Úsala SIEMPRE antes de responder sobre normas de la empresa.",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n-contratos",
+          "mode": "list",
+          "cachedResultName": "n8n-contratos"
+        },
+        "options": {
+          "pineconeNamespace": "soporte-vigente"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        672,
+        112
+      ],
+      "id": "7a87f994-0974-4407-89c6-78990f277ac5",
+      "name": "Pinecone Vector Store"
+    },
+    {
+      "parameters": {
+        "model": "nomic-embed-text:v1.5"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "typeVersion": 1,
+      "position": [
+        816,
+        240
+      ],
+      "id": "fcc1fba2-2db3-489e-a4c8-ffa7d2dee6fb",
+      "name": "Embeddings Ollama"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Consulta el estado de una solicitud de soporte. Necesita el ID (formato INC-0000) y el email del empleado.",
+        "documentId": {
+          "__rl": true,
+          "value": "1ci63lKLoF3-lcRaDMRRLVKbFG0pAt0-IoocBZs_AomQ",
+          "mode": "list",
+          "cachedResultName": "Catalogo_documental",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ci63lKLoF3-lcRaDMRRLVKbFG0pAt0-IoocBZs_AomQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 232682601,
+          "mode": "list",
+          "cachedResultName": "Solicitudes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ci63lKLoF3-lcRaDMRRLVKbFG0pAt0-IoocBZs_AomQ/edit#gid=232682601"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "ID",
+              "lookupValue": "={{ $fromAI('ID', 'Identificador de la solicitud, formato INC-0000', 'string') }}"
+            },
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $fromAI('Email', 'Email del empleado que pregunta', 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        624,
+        256
+      ],
+      "id": "6fcca548-100b-4ea3-95c7-3bfc0b824809",
+      "name": "consultar_solicitud",
+      "notes": "Consulta el estado de una solicitud INC-xxxx. Requiere el ID y el email del empleado."
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Ollama": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "consultar_solicitud": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "f6d9e9ed-b144-40e2-9caa-95f9c7e8ce3a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8e459ccfdc411c5b31fd8f163e7c034a55b2f6748e350a473c9b5905644c56e0"
+  },
+  "nodeGroups": [],
+  "id": "brqaEbTZjbgsZDFZ",
+  "tags": []
+}
