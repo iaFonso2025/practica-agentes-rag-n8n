@@ -129,9 +129,9 @@ Solo se indexan los 8 documentos vigentes, troceados por sección y con metadato
 
 ## 9. Matriz de pruebas
 
-Pruebas del agente ejecutadas el 30/10/2026 en el chat de n8n, cada una en una sesión nueva. Resultado: 15 OK, 2 parciales (falta citar la fuente) y 1 fallo (P02: el filtro de permisos funciona, pero el modelo inventa un estado cuando la herramienta no devuelve filas). Las pruebas P04–P08 dependen del WF2 y están pendientes.
+Pruebas del agente ejecutadas el 30/10/2026 en el chat de n8n, cada una en una sesión nueva. Resultado: 15 OK, 2 parciales (falta citar la fuente) y 1 fallo (P02: el filtro de permisos funcionaba, pero el modelo inventaba un estado cuando la herramienta no devolvía filas). Las pruebas P04–P08 dependen del WF2 y están pendientes.
 
-**Mejora para P02:** reforzar el System Message: "Si consultar_solicitud no devuelve filas, responde exactamente que no existe ninguna solicitud con ese ID para tu email".
+**Corrección de P02:** se añadió al System Message una regla obligatoria: si `consultar_solicitud` no devuelve filas, la respuesta es solo "No existe ninguna solicitud con ese ID asociada a tu email" y nunca se inventa un estado. Tras el cambio, P02b pasa y P01 sigue funcionando.
 
 | ID | Tipo | Entrada | Resultado esperado | Resultado obtenido | OK | Evidencia |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -152,6 +152,7 @@ Pruebas del agente ejecutadas el 30/10/2026 en el chat de n8n, cada una en una s
 | T15 | RAG | ¿Qué hago si el correo de confirmación falla? | No marcar Notificada; registrar error y reintentar; KB-06 §8 | No pasar a Notificada, registrar error, reintento manual, sin duplicados; no cita KB-06 | OK | [T15](evidencias/T15.jpg) |
 | P01 | Solicitudes | ¿Cómo va INC-0001? Soy ana.perez@empresa.com | En curso, prioridad Media | INC-0001 en curso, Ana Pérez, Ventas, VPN (datos de la hoja) | OK | [P01](evidencias/P01.jpg) |
 | P02 | Permisos | ¿Cómo va INC-0001? Soy luis.gomez@empresa.com | No encuentra la solicitud | La tool devuelve 0 filas (no filtra datos de Ana), pero el modelo inventa "en revisión" | Fallo | [P02](evidencias/P02.jpg), [tool](evidencias/P02_herramienta.jpg) |
+| P02b | Permisos (tras corrección) | ¿Cómo va la solicitud INC-0001? Soy luis.gomez@empresa.com | No encuentra la solicitud | "No existe ninguna solicitud con ese ID asociada a tu email." Sin datos inventados; P01 repetida sigue funcionando | OK | [P02b](evidencias/P02b_corregido.jpg), [P01 repetida](evidencias/P01_repetida.jpg) |
 | P03 | Memoria | "Trabajo en Ventas" y después "¿En qué departamento trabajo?" | Ventas | Responde "Ventas" recordando el mensaje anterior de la misma sesión | OK | [P03](evidencias/P03.jpg) |
 | P04 | Ingesta | Subir una versión nueva de un documento | Se borran los vectores antiguos; sin duplicados |  |  |  |
 | P05 | Formulario | Solicitud correcta | Crea INC-xxxx y envía confirmación |  |  |  |

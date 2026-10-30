@@ -20,7 +20,7 @@
     {
       "parameters": {
         "options": {
-          "systemMessage": "Tienes dos herramientas: buscar_documentacion para preguntas sobre normas de la empresa, y consultar_solicitud para el estado de una solicitud INC-xxxx. Para usar consultar_solicitud necesitas el ID y el email del empleado: si falta alguno, pídeselo. Nunca digas que no tienes acceso a las solicitudes: usa la herramienta."
+          "systemMessage": "Tienes dos herramientas: buscar_documentacion para preguntas sobre normas de la empresa, y consultar_solicitud para el estado de una solicitud INC-xxxx. Para usar consultar_solicitud necesitas el ID y el email del empleado: si falta alguno, pídeselo. Nunca digas que no tienes acceso a las solicitudes: usa la herramienta.\n\nREGLA OBLIGATORIA: Si la herramienta consultar_solicitud no devuelve ninguna fila, tu respuesta es solo esta frase: No existe ninguna solicitud con ese ID asociada a tu email. No añadas ningún estado, fecha ni dato de la solicitud. Nunca inventes el estado de una solicitud: solo puedes dar datos que aparezcan en el resultado de la herramienta."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
