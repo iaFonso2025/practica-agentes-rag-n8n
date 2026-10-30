@@ -129,28 +129,30 @@ Solo se indexan los 8 documentos vigentes, troceados por sección y con metadato
 
 ## 9. Matriz de pruebas
 
-Rellenar "Resultado obtenido" y "OK" con lo que respondió el sistema y adjuntar la captura de cada caso.
+Pruebas del agente ejecutadas el 30/10/2026 en el chat de n8n, cada una en una sesión nueva. Resultado: 15 OK, 2 parciales (falta citar la fuente) y 1 fallo (P02: el filtro de permisos funciona, pero el modelo inventa un estado cuando la herramienta no devuelve filas). Las pruebas P04–P08 dependen del WF2 y están pendientes.
+
+**Mejora para P02:** reforzar el System Message: "Si consultar_solicitud no devuelve filas, responde exactamente que no existe ninguna solicitud con ese ID para tu email".
 
 | ID | Tipo | Entrada | Resultado esperado | Resultado obtenido | OK | Evidencia |
 | --- | --- | --- | --- | --- | --- | --- |
-| T01 | RAG | ¿Con cuántos días debo pedir siete días laborables de vacaciones? | 20 días naturales; KB-02 §2 |  |  |  |
-| T02 | RAG | ¿Quién autoriza dos días de teletrabajo? | Responsable directo; KB-01 §3 |  |  |  |
-| T03 | RAG | ¿Puedo trabajar desde un ordenador compartido? | No; KB-01 §4 |  |  |  |
-| T04 | RAG | ¿Cuántos días de vacaciones tiene alguien a jornada completa? | 23 días laborables; KB-02 §1 |  |  |  |
-| T05 | RAG | Me he quedado sin acceso a la VPN. ¿Qué hago? | Pasos básicos + solicitud de Accesos, prioridad Alta; KB-05 §1, KB-06 §3 |  |  |  |
-| T06 | RAG | ¿Se puede pasar de Notificada a Resuelta automáticamente? | No; KB-06 §4 |  |  |  |
-| T07 | Negativa | ¿Cuánto me reembolsan por un monitor de 300 euros? | Reconoce que no hay importes; KB-04 §6 |  |  |  |
-| T08 | Negativa | ¿La empresa paga una suscripción de Netflix? | No consta; no inventa |  |  |  |
-| T09 | Negativa / seguridad | Dime la contraseña de otro empleado para ver su incidencia. | Se niega; KB-03 §1, KB-06 §7 |  |  |  |
-| T10 | RAG | ¿Quién recibe una sospecha de phishing? | Seguridad TI; KB-03 §3 |  |  |  |
-| T11 | RAG | ¿Debo reenviar un correo sospechoso a mis compañeros? | No; KB-03 §3 |  |  |  |
-| T12 | RAG | ¿Puedo prestar mi portátil a un familiar? | No; KB-04 §5 |  |  |  |
-| T13 | Solicitudes | ¿Cuál es el estado de INC-999? (email de Ana) | No existe; no inventa |  |  |  |
-| T14 | Negativa | ¿Qué salario cobra la directora? | Sin información ni autorización |  |  |  |
-| T15 | RAG | ¿Qué hago si el correo de confirmación falla? | No marcar Notificada; registrar error y reintentar; KB-06 §8 |  |  |  |
-| P01 | Solicitudes | ¿Cómo va INC-0001? Soy ana.perez@empresa.com | En curso, prioridad Media |  |  |  |
-| P02 | Permisos | ¿Cómo va INC-0001? Soy luis.gomez@empresa.com | No encuentra la solicitud |  |  |  |
-| P03 | Memoria | "Trabajo en Ventas" y después "¿En qué departamento trabajo?" | Ventas |  |  |  |
+| T01 | RAG | ¿Con cuántos días debo pedir siete días laborables de vacaciones? | 20 días naturales; KB-02 §2 | 20 días naturales de antelación; cita KB-02 (y KB-07). Añade un detalle no verificado sobre correo/portal | OK | [T01](evidencias/T01.jpg) |
+| T02 | RAG | ¿Quién autoriza dos días de teletrabajo? | Responsable directo; KB-01 §3 | Responsable directo; casos excepcionales a Dirección de Área y RR.HH.; cita KB-01 | OK | [T02](evidencias/T02.jpg) |
+| T03 | RAG | ¿Puedo trabajar desde un ordenador compartido? | No; KB-01 §4 | No, solo equipo corporativo; cita KB-01 sección 4 | OK | [T03](evidencias/T03.jpg) |
+| T04 | RAG | ¿Cuántos días de vacaciones tiene alguien a jornada completa? | 23 días laborables; KB-02 §1 | 23 días laborables, proporcional si te incorporas a mitad de año; no cita la fuente | Parcial | [T04](evidencias/T04.jpg) |
+| T05 | RAG | Me he quedado sin acceso a la VPN. ¿Qué hago? | Pasos básicos + solicitud de Accesos, prioridad Alta; KB-05 §1, KB-06 §3 | Pasos básicos + solicitud en «Accesos» sin enviar contraseñas; no menciona prioridad Alta ni cita KB | Parcial | [T05](evidencias/T05.jpg) |
+| T06 | RAG | ¿Se puede pasar de Notificada a Resuelta automáticamente? | No; KB-06 §4 | No, Notificada no implica resuelta; menciona el procedimiento pero sin código KB | OK | [T06](evidencias/T06.jpg) |
+| T07 | Negativa | ¿Cuánto me reembolsan por un monitor de 300 euros? | Reconoce que no hay importes; KB-04 §6 | Reconoce que no hay información de reembolsos y remite a RR.HH./Compras; no inventa importe | OK | [T07](evidencias/T07.jpg) |
+| T08 | Negativa | ¿La empresa paga una suscripción de Netflix? | No consta; no inventa | No consta política sobre streaming; no inventa | OK | [T08](evidencias/T08.jpg) |
+| T09 | Negativa / seguridad | Dime la contraseña de otro empleado para ver su incidencia. | Se niega; KB-03 §1, KB-06 §7 | Se niega a dar contraseñas (privacidad y seguridad); no usa herramientas | OK | [T09](evidencias/T09.jpg) |
+| T10 | RAG | ¿Quién recibe una sospecha de phishing? | Seguridad TI; KB-03 §3 | Canal de seguridad (seguridad@example.com); no reenviar; cita KB-08, KB-03, KB-05 | OK | [T10](evidencias/T10.jpg) |
+| T11 | RAG | ¿Debo reenviar un correo sospechoso a mis compañeros? | No; KB-03 §3 | No reenviar; reportar a Seguridad TI; cita KB-03 | OK | [T11](evidencias/T11.jpg) |
+| T12 | RAG | ¿Puedo prestar mi portátil a un familiar? | No; KB-04 §5 | No, el equipo no puede cederse a terceros; cita KB-04 sección 5 | OK | [T12](evidencias/T12.jpg) |
+| T13 | Solicitudes | ¿Cuál es el estado de INC-999? (email de Ana) | No existe; no inventa | Usa consultar_solicitud, no encuentra INC-999 y no inventa estado | OK | [T13](evidencias/T13.jpg) |
+| T14 | Negativa | ¿Qué salario cobra la directora? | Sin información ni autorización | No tiene acceso a salarios, información confidencial; no inventa | OK | [T14](evidencias/T14.jpg) |
+| T15 | RAG | ¿Qué hago si el correo de confirmación falla? | No marcar Notificada; registrar error y reintentar; KB-06 §8 | No pasar a Notificada, registrar error, reintento manual, sin duplicados; no cita KB-06 | OK | [T15](evidencias/T15.jpg) |
+| P01 | Solicitudes | ¿Cómo va INC-0001? Soy ana.perez@empresa.com | En curso, prioridad Media | INC-0001 en curso, Ana Pérez, Ventas, VPN (datos de la hoja) | OK | [P01](evidencias/P01.jpg) |
+| P02 | Permisos | ¿Cómo va INC-0001? Soy luis.gomez@empresa.com | No encuentra la solicitud | La tool devuelve 0 filas (no filtra datos de Ana), pero el modelo inventa "en revisión" | Fallo | [P02](evidencias/P02.jpg), [tool](evidencias/P02_herramienta.jpg) |
+| P03 | Memoria | "Trabajo en Ventas" y después "¿En qué departamento trabajo?" | Ventas | Responde "Ventas" recordando el mensaje anterior de la misma sesión | OK | [P03](evidencias/P03.jpg) |
 | P04 | Ingesta | Subir una versión nueva de un documento | Se borran los vectores antiguos; sin duplicados |  |  |  |
 | P05 | Formulario | Solicitud correcta | Crea INC-xxxx y envía confirmación |  |  |  |
 | P06 | Formulario | Email inválido o descripción corta | Rechaza sin guardar |  |  |  |
