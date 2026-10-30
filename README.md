@@ -73,7 +73,7 @@ Solo se indexan los 8 documentos vigentes, troceados por sección y con metadato
 
 **Recuperación (WF3):** la herramienta `buscar_documentacion` consulta el namespace `soporte-vigente`, devuelve los 4 fragmentos más parecidos (similitud coseno) con sus metadatos, y el System Message obliga a citar la fuente.
 
-**Por qué trocear por sección:** cada sección trata una sola norma, así el fragmento recuperado responde la pregunta completa y la cita `KB-02 §2` es exacta.
+**Por qué trocear por sección:** cada sección trata una sola norma, así el fragmento recuperado responde la pregunta completa y la cita `KB-02 Sección 2` es exacta.
 
 ## 5. Gestión de solicitudes
 
