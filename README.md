@@ -131,6 +131,10 @@ Solo se indexan los 8 documentos vigentes, troceados por sección y con metadato
 
 Pruebas del agente ejecutadas el 30/10/2026 en el chat de n8n, cada una en una sesión nueva. Resultado: 15 OK, 2 parciales (falta citar la fuente) y 1 fallo (P02: el filtro de permisos funcionaba, pero el modelo inventaba un estado cuando la herramienta no devolvía filas). Las pruebas P04–P08 dependen del WF2 y están pendientes.
 
+**Corrección de citas (T04, T05):** se añadió al System Message la regla "CITAS OBLIGATORIAS": toda respuesta basada en la documentación termina con una línea `Fuente:` con documento_id, título, versión y sección. T04b ya pasa; T05b cita bien pero sigue sin mencionar la prioridad Alta de KB-06, porque el buscador solo recupera el fragmento de KB-05.
+
+**P04 (actualización de un documento):** pendiente. Al subir un PDF con el mismo nombre, Drive lo renombra con "(1)" y ya no coincide con el catálogo (prueba P04a). Para probarlo hay que borrar el original de Drive y subir el nuevo con el nombre exacto, o añadir un trigger de *File Updated*.
+
 **Corrección de P02:** se añadió al System Message una regla obligatoria: si `consultar_solicitud` no devuelve filas, la respuesta es solo "No existe ninguna solicitud con ese ID asociada a tu email" y nunca se inventa un estado. Tras el cambio, P02b pasa y P01 sigue funcionando.
 
 | ID | Tipo | Entrada | Resultado esperado | Resultado obtenido | OK | Evidencia |
@@ -139,7 +143,9 @@ Pruebas del agente ejecutadas el 30/10/2026 en el chat de n8n, cada una en una s
 | T02 | RAG | ¿Quién autoriza dos días de teletrabajo? | Responsable directo; KB-01 §3 | Responsable directo; casos excepcionales a Dirección de Área y RR.HH.; cita KB-01 | OK | [T02](evidencias/T02.jpg) |
 | T03 | RAG | ¿Puedo trabajar desde un ordenador compartido? | No; KB-01 §4 | No, solo equipo corporativo; cita KB-01 sección 4 | OK | [T03](evidencias/T03.jpg) |
 | T04 | RAG | ¿Cuántos días de vacaciones tiene alguien a jornada completa? | 23 días laborables; KB-02 §1 | 23 días laborables, proporcional si te incorporas a mitad de año; no cita la fuente | Parcial | [T04](evidencias/T04.jpg) |
+| T04b | RAG (tras corrección) | ¿Cuántos días de vacaciones tiene alguien a jornada completa? | 23 días laborables; KB-02 §1 | 23 días laborables. "Fuente: KB-02 · Política de vacaciones y ausencias · v3.0 · 1. Días disponibles" | OK | [T04b](evidencias/T04b_corregido.jpg) |
 | T05 | RAG | Me he quedado sin acceso a la VPN. ¿Qué hago? | Pasos básicos + solicitud de Accesos, prioridad Alta; KB-05 §1, KB-06 §3 | Pasos básicos + solicitud en «Accesos» sin enviar contraseñas; no menciona prioridad Alta ni cita KB | Parcial | [T05](evidencias/T05.jpg) |
+| T05b | RAG (tras corrección) | Me he quedado sin acceso a la VPN. ¿Qué hago? | Pasos + Accesos, prioridad Alta; KB-05 §1, KB-06 §3 | Pasos + canal «Accesos» + no enviar contraseñas/MFA. "Fuente: KB-05 · Guía de incidencias técnicas frecuentes · v1.0 · 1. Problemas de VPN". Sigue sin mencionar prioridad Alta (KB-06) | Parcial | [T05b](evidencias/T05b_corregido.jpg) |
 | T06 | RAG | ¿Se puede pasar de Notificada a Resuelta automáticamente? | No; KB-06 §4 | No, Notificada no implica resuelta; menciona el procedimiento pero sin código KB | OK | [T06](evidencias/T06.jpg) |
 | T07 | Negativa | ¿Cuánto me reembolsan por un monitor de 300 euros? | Reconoce que no hay importes; KB-04 §6 | Reconoce que no hay información de reembolsos y remite a RR.HH./Compras; no inventa importe | OK | [T07](evidencias/T07.jpg) |
 | T08 | Negativa | ¿La empresa paga una suscripción de Netflix? | No consta; no inventa | No consta política sobre streaming; no inventa | OK | [T08](evidencias/T08.jpg) |
@@ -154,6 +160,7 @@ Pruebas del agente ejecutadas el 30/10/2026 en el chat de n8n, cada una en una s
 | P02 | Permisos | ¿Cómo va INC-0001? Soy luis.gomez@empresa.com | No encuentra la solicitud | La tool devuelve 0 filas (no filtra datos de Ana), pero el modelo inventa "en revisión" | Fallo | [P02](evidencias/P02.jpg), [tool](evidencias/P02_herramienta.jpg) |
 | P02b | Permisos (tras corrección) | ¿Cómo va la solicitud INC-0001? Soy luis.gomez@empresa.com | No encuentra la solicitud | "No existe ninguna solicitud con ese ID asociada a tu email." Sin datos inventados; P01 repetida sigue funcionando | OK | [P02b](evidencias/P02b_corregido.jpg), [P01 repetida](evidencias/P01_repetida.jpg) |
 | P03 | Memoria | "Trabajo en Ventas" y después "¿En qué departamento trabajo?" | Ventas | Responde "Ventas" recordando el mensaje anterior de la misma sesión | OK | [P03](evidencias/P03.jpg) |
+| P04a | Ingesta | Subir a Drive un PDF que Drive renombra a "Politica_Teletrabajo_v2 (1).pdf" | No está en el catálogo: no se indexa | Ejecución #154: el catálogo devuelve 0 filas y el flujo se detiene sin tocar Pinecone (58 vectores antes) | OK | [ejecución](evidencias/P04a_ejecucion.jpg), [Pinecone](evidencias/P04a_pinecone_antes.jpg) |
 | P04 | Ingesta | Subir una versión nueva de un documento | Se borran los vectores antiguos; sin duplicados |  |  |  |
 | P05 | Formulario | Solicitud correcta | Crea INC-xxxx y envía confirmación |  |  |  |
 | P06 | Formulario | Email inválido o descripción corta | Rechaza sin guardar |  |  |  |
