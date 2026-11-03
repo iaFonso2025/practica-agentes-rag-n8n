@@ -160,8 +160,8 @@ Pruebas del agente ejecutadas el 30/10/2026 en el chat de n8n, cada una en una s
 | P02 | Permisos | ¿Cómo va INC-0001? Soy luis.gomez@empresa.com | No encuentra la solicitud | La tool devuelve 0 filas (no filtra datos de Ana), pero el modelo inventa "en revisión" | Fallo | [P02](evidencias/P02.jpg), [tool](evidencias/P02_herramienta.jpg) |
 | P02b | Permisos (tras corrección) | ¿Cómo va la solicitud INC-0001? Soy luis.gomez@empresa.com | No encuentra la solicitud | "No existe ninguna solicitud con ese ID asociada a tu email." Sin datos inventados; P01 repetida sigue funcionando | OK | [P02b](evidencias/P02b_corregido.jpg), [P01 repetida](evidencias/P01_repetida.jpg) |
 | P03 | Memoria | "Trabajo en Ventas" y después "¿En qué departamento trabajo?" | Ventas | Responde "Ventas" recordando el mensaje anterior de la misma sesión | OK | [P03](evidencias/P03.jpg) |
-| P04a | Ingesta | Subir a Drive un PDF que Drive renombra a "Politica_Teletrabajo_v2 (1).pdf" | No está en el catálogo: no se indexa | Ejecución #154: el catálogo devuelve 0 filas y el flujo se detiene sin tocar Pinecone (58 vectores antes) | OK | [ejecución](evidencias/P04a_ejecucion.jpg), [Pinecone](evidencias/P04a_pinecone_antes.jpg) |
-| P04 | Ingesta | Subir una versión nueva de un documento | Se borran los vectores antiguos; sin duplicados |  |  |  |
+| P04a | Ingesta | Subir a Drive un PDF que Drive renombra a "Politica_Teletrabajo_v2 (1).pdf" | No está en el catálogo: no se indexa | El catálogo devuelve 0 filas y el flujo se detiene sin tocar Pinecone (58 vectores antes) | OK | [ejecución](evidencias/P04a_ejecucion.jpg), [Pinecone](evidencias/P04a_pinecone_antes.jpg) |
+| P04 | Ingesta | Subir una versión nueva de un documento | Se borran los vectores antiguos; sin duplicados | Elimina los archivos en la base de datos que tenga el mismo nombre del archivo subido, y guarda el nuevo archivo | OK |  |
 | P05 | Formulario | Solicitud correcta | Crea INC-xxxx y envía confirmación |  |  |  |
 | P06 | Formulario | Email inválido o descripción corta | Rechaza sin guardar |  |  |  |
 | P07 | Formulario | Solicitud duplicada | Detecta el duplicado |  |  |  |
